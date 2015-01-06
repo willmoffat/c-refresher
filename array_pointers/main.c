@@ -2,12 +2,13 @@
  * Demonstrate how utility functions can work with runtime sized arrays in C.
  * You must pass a pointer of the element type and do pointer arithmetic to
  * index into the array.
+ *
+ * Also demonstrates ArrayCount macro.
  */
 
 #include <stdio.h>
 
-#define MAX_Y 3
-#define MAX_X 4
+#define ArrayCount(array) (sizeof(array)/sizeof((array)[0]))
 
 // This struct can represent any world size.
 struct World {
@@ -23,19 +24,20 @@ void print_map(struct World *world) {
   for (y = 0; y < world->height; y++) {
     for (x = 0; x < world->width; x++) {
       tile = world->map + y * world->height + x;
-      printf("%d", *tile);
+      putchar(*tile ? '%' : '.');
     }
-    printf("\n");
+    putchar('\n');
   }
 }
 
 int main(int argc, char **argv) {
 
   // Allocate memory for world.
-  int map[MAX_Y][MAX_X] = {{0, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 0, 0}};
+  int map[][4] = {{0, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 0, 0}};
   struct World world;
-  world.width = MAX_X;
-  world.height = MAX_Y;
+
+  world.width = ArrayCount(map[0]);
+  world.height = ArrayCount(map);
   world.map = (int *)&map;
   print_map(&world);
 
