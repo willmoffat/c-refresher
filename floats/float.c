@@ -2,19 +2,18 @@
 #include <stdint.h>
 
 // assumes little endian
-void p(float *ptr) {
+void print_value(void *ptr, size_t size) {
   unsigned char *b = (unsigned char *)ptr;
   unsigned char byte;
   int i, j;
-  size_t size = 4;
-
-  printf("\nfloat=%f\n", *ptr);
+  /*
   for (i = size - 1; i >= 0; i--) {
     byte = b[i];
     printf("   %x", byte >> 4);
     printf("    %x ", byte & 0xf);
   }
   puts("");
+  */
   for (i = size - 1; i >= 0; i--) {
     for (j = 7; j >= 0; j--) {
       byte = b[i] & (1 << j);
@@ -26,20 +25,29 @@ void p(float *ptr) {
     }
     printf(" ");
   }
-  puts("");
+  putchar('\n');
 }
+
+// Print a float.
+void p(float *ptr) {
+  if (*ptr == 0) {
+    putchar('\n');
+  } else {
+    printf("float=%10f  ", *ptr);
+    print_value(ptr, sizeof(*ptr));
+  }
+}
+
+#define ArrayCount(array) (sizeof(array)/sizeof(array[0]))
 
 int main() {
   printf("sizeof(float)=%d\n", (int)sizeof(float));
 
-  float a,b,c;
-  a = 1.0f;
-  b = 0.5f;
-  c = 2.0f;
-
-  p(&a);
-  p(&b);
-  p(&c);
+  float a[] = {1.0f, -1.0f, 0, 0.5f, -0.5f, 0, 1,2,3,0};
+  int i;
+  for (i=0; i<ArrayCount(a); i++) {
+    p(a+i);
+  }
 
   return 0;
 }
